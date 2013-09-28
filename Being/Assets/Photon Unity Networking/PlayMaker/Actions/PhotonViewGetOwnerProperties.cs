@@ -9,11 +9,13 @@ namespace HutongGames.PlayMaker.Actions
 	[HelpUrl("https://hutonggames.fogbugz.com/default.asp?W919")]
 	public class PhotonViewGetOwnerProperties : FsmStateAction
 	{
-		
+		[ActionSection("set up")]
 		[RequiredField]
 		[CheckForComponent(typeof(PhotonView))]
 		[Tooltip("The Game Object with the PhotonView attached.")]
 		public FsmOwnerDefault gameObject;
+		
+		[ActionSection("player properties")]
 		
 		[Tooltip("The Photon player name")]
 		[UIHint(UIHint.Variable)]
@@ -30,6 +32,16 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("The Photon player isLocal isMasterClient")]
 		[UIHint(UIHint.Variable)]
 		public FsmBool isMasterClient;
+		
+		[ActionSection("player custom properties")]
+		
+		[Tooltip("Custom Properties you have assigned to this player.")]
+		[CompoundArray("player Custom Properties", "property", "value")]
+		public FsmString[] customPropertyKeys;
+		[UIHint(UIHint.Variable)]
+		public FsmVar[] customPropertiesValues;
+		
+		[ActionSection("Events")] 
 		
 		[Tooltip("Send this event if the Owner was found.")]
 		public FsmEvent successEvent;
@@ -58,6 +70,10 @@ namespace HutongGames.PlayMaker.Actions
 			ID = null;
 			isLocal = null;
 			isMasterClient = null;
+			
+			customPropertyKeys = new FsmString[0];
+			customPropertiesValues = new FsmVar[0];
+			
 			successEvent = null;
 			failureEvent = null;
 			
@@ -97,6 +113,19 @@ namespace HutongGames.PlayMaker.Actions
 			ID.Value   = _player.ID;
 			isLocal.Value = _player.isLocal;
 			isMasterClient.Value = _player.isMasterClient;
+			
+			// get the custom properties
+			int i = 0;
+			foreach(FsmString key in customPropertyKeys)
+			{
+				if (_player.customProperties.ContainsKey(key.Value))
+				{
+					PlayMakerPhotonProxy.ApplyValueToFsmVar(this.Fsm,customPropertiesValues[i],_player.customProperties[key.Value]);
+				}else{
+					return false;
+				}
+				i++;
+			}
 			
 			return true;
 		}

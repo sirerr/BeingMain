@@ -40,7 +40,7 @@ MonoBehaviour:
   m_Script: {fileID: 1384774831, guid: e743331561ef77147ae48cda9bcb8209, type: 1}
   m_Name: 
   fsm:
-    owner: {fileID: 11400000}
+    usedInTemplate: {fileID: 0}
     name: Photon messages interface
     startState: ' '
     states:
@@ -75,9 +75,11 @@ MonoBehaviour:
         fsmStringParams: []
         fsmObjectParams: []
         fsmVarParams: []
+        byteData: 
         arrayParamSizes: 
         arrayParamTypes: []
-        byteData: 
+        customTypeSizes: 
+        customTypeNames: []
         paramDataType: 
         paramName: []
         paramDataPos: 
@@ -86,7 +88,13 @@ MonoBehaviour:
     - name: PHOTON / CONNECTED TO PHOTON
       isSystemEvent: 0
       isGlobal: 1
+    - name: PHOTON / CONNECTION FAIL
+      isSystemEvent: 0
+      isGlobal: 1
     - name: PHOTON / CREATED ROOM
+      isSystemEvent: 0
+      isGlobal: 1
+    - name: PHOTON / CUSTOM ROOM PROPERTIES CHANGED
       isSystemEvent: 0
       isGlobal: 1
     - name: PHOTON / DISCONNECTED FROM PHOTON
@@ -110,10 +118,13 @@ MonoBehaviour:
     - name: PHOTON / MASTER CLIENT SWITCHED
       isSystemEvent: 0
       isGlobal: 1
-    - name: PHOTON / PHOTON CREATED ROOM FAILED
+    - name: PHOTON / PHOTON CREATE ROOM FAILED
       isSystemEvent: 0
       isGlobal: 1
     - name: PHOTON / PHOTON INSTANTIATE
+      isSystemEvent: 0
+      isGlobal: 1
+    - name: PHOTON / PHOTON JOIN ROOM FAILED
       isSystemEvent: 0
       isGlobal: 1
     - name: PHOTON / PHOTON PLAYER CONNECTED
@@ -123,6 +134,9 @@ MonoBehaviour:
       isSystemEvent: 0
       isGlobal: 1
     - name: PHOTON / PHOTON RANDOM JOIN FAILED
+      isSystemEvent: 0
+      isGlobal: 1
+    - name: PHOTON / PLAYER PROPERTIES CHANGED
       isSystemEvent: 0
       isGlobal: 1
     - name: PHOTON / RECEIVED ROOM LIST
@@ -169,7 +183,7 @@ MonoBehaviour:
       It also implements a watcher for the photon state, so when the '
     docUrl: 
     showStateLabel: 1
-    maxReEnterStateCount: 100
+    maxLoopCount: 0
     watermark: 
     ExposedEvents: []
     RestartOnEnable: 1
@@ -188,6 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b9e755463b37471a805fa8a5bce6dac, type: 1}
   m_Name: 
   debug: 1
+  lastDisconnectCause: 0
   LogMessageInfo: 1
 --- !u!114 &11400004
 MonoBehaviour:
@@ -199,12 +214,15 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 1}
   m_Name: 
-  sceneViewID: 0
+  subId: 0
+  ownerId: 0
+  group: 0
+  prefixBackup: -1
   observed: {fileID: 0}
   synchronization: 0
-  group: 0
   onSerializeTransformOption: 3
   onSerializeRigidBodyOption: 2
+  instantiationId: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

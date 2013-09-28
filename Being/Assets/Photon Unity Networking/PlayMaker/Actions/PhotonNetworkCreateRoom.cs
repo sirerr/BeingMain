@@ -5,7 +5,8 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Photon")]
-	[Tooltip("Create a room with given title. This will fail if the room title is already in use.")]
+	[Tooltip("Create a room with given title. This will fail if the room title is already in use.\n" +
+		"Note: If you don't want to create a unique room-name yourself, leave the room name to empty, and the server will assign a roomName (a GUID as string).")]
 	[HelpUrl("https://hutonggames.fogbugz.com/default.asp?W903")]
 	public class PhotonNetworkCreateRoom : FsmStateAction
 	{
@@ -34,8 +35,12 @@ namespace HutongGames.PlayMaker.Actions
 			
 			byte max = (byte)maxNumberOfPLayers.Value;
 		
-			PhotonNetwork.CreateRoom(roomName.Value,isVisible.Value,isOpen.Value,max);
-			
+			if (string.IsNullOrEmpty(roomName.Value))
+			{
+				PhotonNetwork.CreateRoom(null,isVisible.Value,isOpen.Value,max);
+			}else{
+				PhotonNetwork.CreateRoom(roomName.Value,isVisible.Value,isOpen.Value,max);
+			}
 			
 			Finish();
 		}

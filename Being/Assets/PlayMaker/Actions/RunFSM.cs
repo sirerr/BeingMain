@@ -61,7 +61,11 @@ namespace HutongGames.PlayMaker.Actions
             }
 
             runFsm.OnEnable();
-            runFsm.Start();
+
+            if (!runFsm.Started)
+            {
+                runFsm.Start();
+            }
 
             storeID.Value = fsmTemplateControl.ID;
 
@@ -162,7 +166,7 @@ namespace HutongGames.PlayMaker.Actions
 
         public override void OnGUI()
         {
-            if (runFsm.HandleOnGUI)
+            if (runFsm != null && runFsm.HandleOnGUI)
             {
                 runFsm.OnGUI();
             }

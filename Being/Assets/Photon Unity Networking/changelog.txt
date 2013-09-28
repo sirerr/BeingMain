@@ -1,3 +1,56 @@
+v1.20 (19 April 2013)
+Added: Features "Find Friends" and "Custom Authentication" plus (simple) demo.
+Added: PhotonNetwork.FindFriends(string[] friendsToFind) to be used with (external) friends lists. If all users set their names before connecting, they could be found using this method and it's possible to join their games/rooms.
+Added: OnUpdatedFriendList() can be implememented by your game to get a call when FindFriends() finished. Also see PhotonNetworkingMessage.OnUpdatedFriendList for info.
+Added: PhotonNetwork.Friends property which will provide the result of a FindFriends call (takes a roundtrip to the server).
+Added: FriendInfo class for the friends list (filled with names when FindFriends is called and getting updated with online status and room names when result was received).
+Internal: Authenticate now sends the playername if not null or empty. This allows tracking of players and in which room they are.
+Added: PhotonNetwork.ConnectToBestCloudServer() to connect to the region with the lowest averaged ping. PingCloudRegions MonoBehaviour is used to actually do the pinging.
+Internal: Converted all visible text to string variables in PUN Wizard class. To be translated.
+Fixed: Converter for Network.GetLastPing(player) and Network.CloseConnection(player,bool). They now get converted into their closest variants in PUN (which doesn't sync each player's ping)
+Internal: The Extension class now explicitly uses SupportClass == ExitGames.Client.Photon.SupportClass, avoiding some name clash with other libs. At the same time, that class is now the only place where the SupportClass is used.
+Internal: Renamed "utility" component DontDestroyOnLoad to TestDontDestroyOnLoad. Now filename and classname are identical again and this avoids another name clash with other projects.
+Internal: Player properties are no longer sent if the actorNumber is < 1. While in room, the actorNumber is always > 0.
+Updated: Reference doc (the PDF in this package).
+Added: PhotonNetwork.FetchServerTimestamp to have that method available
+Added: PhotonNetwork.ServerAddress to access this directly (but only as getter)
+Changed: The ServerSettings field is now public (to be able to read and show settings)
+Internal: ServerSettings file now has an enum CloudServerRegion. Used as names-list and in a few methods
+Added: PhotonNetwork.ConnectToBestCloudServer(gameVersion) to connect the region with best ping. The PingCloudRegions script automatically pings available regions once, then saves the results in the PlayerPrefs. Currently this is enabled by default.
+
+
+v1.19.3 (12. April 2013)
+Fixed: DemoSynchronization was missing a script on the CubeInterpo (game object)
+Fixed: OfflineMode for all overrides of CreateRoom() will now call both OnCreatedRoom() and OnJoinedRoom().
+Fixed: Inspector for PhotonViews now makes the Editor save every change in the component. Before, prefabs were overriding (linked) objects in the hierarchy/scene.
+Changed: PhotonViewInspector now shows if the (local) client is controlling a GameObject (via PhotonView).
+
+
+v1.19.1 (14. March 2013)
+Fixed: Calls to OnMasterClientSwitched are now re-enabled. They went missing in 1.18, it seems. If a proper player was master before, then OnMasterClientSwitched is called when a new master was picked.
+
+v1.19 (14. March 2013)
+Updated: PUN Wizard for setup and help.
+Added: Editor key shortcuts. For PUN Wizard: ALT+P. To add PhotonView: ALT+V.
+Added: PUN Wizard button to select the PhotonServerSettings file in project (to have a look at the config and RPC list).
+Added: Wizard shows a note when iOS or Android Pro licenses are not available. Ignore if you don't build for those platforms.
+Added: Context menu for PhotonView Components to open the PUN Wizard.
+Added: Demo Hub scene to select the different demos.
+Added: Demo "Boxes" and "Synchronization".
+Updated: Marco Polo Tutorial. This "result" is slightly different from the online tutorial. Read it's readme for details. Also uses the current "Monster" asset from Asset Store (minus some surplus scene, geometry, etc).
+Added: PunStartup. On import this Editor script opens the Hub scene (if no scene is open) and adds all demo scenes to the build settings (if no scenes are in the list).
+Fixed: OnPhotonSerializeView was fired for playerpropertychange.
+Changed: Log entries for failed random matchmaking. It's perfectly ok that sometimes no room is available, so that is no Error.
+Changed: Instead of sending RPC names, PUN now compiles an index of RPC-methods and sends a shortcut (just a byte). RPC searching is done in-Editor. Currently a byte is used as shortcut, enabling 255 distinct RPC methods. PUN can be modified to use short or int as shortcuts (look up comments "LIMITS RPC COUNT").
+Changed: ServerSettings class is extended by the RPC-List. The PhotonServerSettings asset will be updated seamlessly if this new PUN version is imported. Copying the new class file over older ones will erease your settinsg and you might need to edit them again.
+Changed: RPC calls without parameters are now a little more compact, cause the key for parameters is skipped.
+
+
+v1.18.2 (18. February 2013)
+Updated: To a new Photon Client library (v3.2.0.1) which includes a fix for disconnects caused by network simulation.
+Fixed: A potential endless loading-loop on the master client, when using level synchronization
+Added: callback for changes to custom room properties and changes to player properties
+
 v1.18 (31. January 2013)
 Note: Open all scenes that have PhotonViews and just save them again.
 
@@ -45,7 +98,6 @@ Internal: The hidden GameObject for the PhotonHandler script should only be crea
 
 Known Issue: When you load a new scene, all instantiated GameObjects are destroyed only locally but not on the server. Anyone who joins the room later on still creates those GOs. To work around this, PhotonNetwork.Destroy your instantiated game objects before loading a new scene. Or use: PhotonNetwork.RemoveAllInstantiatedObjects(player).
 Known Issue: Changing the group of a PhotonView is only done locally and not synced.
-
 
 v1.17 (27. September 2012)
 Note: this version has breaking changes! don't try to use it with clients with older PUN versions

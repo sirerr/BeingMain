@@ -265,7 +265,41 @@ public enum PhotonNetworkingMessage
     /// The Photon Cloud will mail you when the CCU limit was reached. This is also visible in the Dashboard (webpage).
     /// Example: void OnPhotonMaxCccuReached(){ ... }
     /// </remarks>
-    OnPhotonMaxCccuReached
+    OnPhotonMaxCccuReached,
+	
+	/// <summary>
+    /// Called when inside a room when its custom properties have changed. This is ALSO called for room property changes by the local players.
+    /// </summary>
+    /// <remarks>
+    /// Example: void OnPhotonCustomRoomPropertiesChanged(){ ... }
+    /// </remarks>
+	OnPhotonCustomRoomPropertiesChanged,
+	
+	/// <summary>
+    /// Called when inside a room when a players custom properties change.
+    /// </summary>
+    /// <remarks>
+    /// Example: void OnPhotonPlayerPropertiesChanged(PhotonPlayer player){ ... }
+    /// </remarks>
+	OnPhotonPlayerPropertiesChanged,
+
+    /// <summary>
+    /// Called when the server sent the response to a FindFriends request and updated PhotonNetwork.Friends.
+    /// </summary>
+    /// <remarks>
+    /// Example: void OnUpdatedFriendList(){ ... }
+    /// </remarks>
+    OnUpdatedFriendList,
+    
+    /// <summary>
+    /// Called when the custom authentication failed (due to user-input, bad tokens/secrets or wrong configuration). Followed by disconnect!
+    /// Example: void OnCustomAuthenticationFailed(string debugMessage){ ... }
+    /// </summary>
+    /// <remarks>
+    /// Unless you setup a custom authentication service for your app (in the Dashboard), this won't be called!
+    /// If authentication is successful, this method is also not called but OnJoinedLobby, OnConnectedToMaster will be called (just as usual).
+    /// </remarks>
+    OnCustomAuthenticationFailed,
 }
 
 /// <summary>
@@ -279,6 +313,16 @@ public enum DisconnectCause
     /// <summary>Connection could not be established.
     /// Possible cause: Local server not running.</summary>
     ExceptionOnConnect = StatusCode.ExceptionOnConnect,
+
+    /// <summary>The security settings for client or server don't allow a connection (see remarks).</summary>
+    /// <remarks>
+    /// A common cause for this is that browser clients read a "crossdomain" file from the server.
+    /// If that file is unavailable or not configured to let the client connect, this exception is thrown.
+    /// Photon usually provides this crossdomain file for Unity. 
+    /// If it fails, read:
+    /// http://doc.exitgames.com/photon-server/PolicyApp
+    /// </remarks>
+    SecurityExceptionOnConnect = StatusCode.SecurityExceptionOnConnect,
 
     /// <summary>Connection timed out.
     /// Possible cause: Remote server not running or required ports blocked (due to router or firewall).</summary>

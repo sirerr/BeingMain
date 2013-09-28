@@ -75,7 +75,7 @@ namespace HutongGames.PlayMaker.Actions
 					}
                 }
 
-#if !(UNITY_FLASH || UNITY_NACL)
+#if !(UNITY_FLASH || UNITY_NACL || UNITY_METRO || UNITY_WP8)
 				GameObject newObject;
 
 				if (!networkInstantiate.Value)

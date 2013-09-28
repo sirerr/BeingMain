@@ -13,8 +13,8 @@ namespace HutongGames.PlayMaker.Actions
 		}
 
 		public override void OnEnter()
-		{			
-#if UNITY_IPHONE
+        {
+#if UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
   			Input.location.Stop();
 #endif
             Finish();

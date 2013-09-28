@@ -63,9 +63,9 @@ public class PlayMakerPhotonWizard : PhotonEditor
 		RegisterOrigin = AccountService.Origin.Playmaker;
 	
         // custom title in custom, additinal menu entry
-        WindowTitle = "Photon Wizard";
+       PhotonEditor.CurrentLang.WindowTitle = "Photon Wizard";
        
-		EditorWindow.GetWindow(WindowType, false, WindowTitle);
+		EditorWindow.GetWindow(WindowType, false, PhotonEditor.CurrentLang.WindowTitle);
 		//ShowRegistrationWizard();
 		
 		userHasSeenWizardIntro = false;
@@ -98,7 +98,7 @@ public class PlayMakerPhotonWizard : PhotonEditor
 		
 		FsmEditorStyles.Init();
 
-		FsmEditorGUILayout.ToolWindowLargeTitle(this, "Photon Set up Wizard");
+		FsmEditorGUILayout.ToolWindowLargeTitle(this, "Photon Setup Wizard");
 		GUILayout.Space(_topSpace);
 		EditorGUIUtility.LookLikeControls(200);
 		
@@ -108,6 +108,14 @@ public class PlayMakerPhotonWizard : PhotonEditor
 		{
 			GUI.color =  PlayMakerPhotonEditorUtility.lightOrange;
 			GUILayout.Label("WARNING: Photon Network version is newer: "+PhotonNetwork.versionPUN+". We only support version "+ PlayMakerPhotonEditorUtility.supportedPUNVersion+".\n It is recommended to only use the Photon Network assets provided with PlayMaker, as compatibility issue may be found otherwise.","box",GUILayout.ExpandWidth(true));
+			GUI.color = Color.white;
+		}
+		
+		bool hasPro = UnityEditorInternal.InternalEditorUtility.HasAdvancedLicenseOnBuildTarget(EditorUserBuildSettings.activeBuildTarget);
+		if (! hasPro)
+		{
+			GUI.color =  PlayMakerPhotonEditorUtility.lightOrange;
+			GUILayout.Label("WARNING: Photon requires "+EditorUserBuildSettings.activeBuildTarget+" Pro to make an "+EditorUserBuildSettings.activeBuildTarget+" build.","box",GUILayout.ExpandWidth(true));
 			GUI.color = Color.white;
 		}
 		

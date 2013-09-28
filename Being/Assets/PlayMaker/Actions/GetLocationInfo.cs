@@ -48,7 +48,7 @@ namespace HutongGames.PlayMaker.Actions
 
 		void DoGetLocationInfo()
 		{
-#if UNITY_IPHONE
+#if UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
 
 			if (Input.location.status != LocationServiceStatus.Running)
 			{

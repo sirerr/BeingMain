@@ -9,7 +9,7 @@ using UnityEngine;
 // TODO: move this to dll when Unity supports it...
 
 [System.Serializable]
-class FsmEditorWindow : EditorWindow
+class FsmEditorWindow : BaseEditorWindow
 {
     /// <summary>
     /// Open the Fsm Editor and optionally show the Welcome Screen
@@ -73,22 +73,23 @@ class FsmEditorWindow : EditorWindow
 
 	// ReSharper disable UnusedMember.Local
 
-	/// Called when the Fsm Editor window is created
-	/// NOTE: happens on playmode change and recompile!
-	private void OnEnable()
-	{
-		instance = this;
+    /// <summary>
+    /// Delay initialization until first OnGUI to avoid interfering with runtime system intialization.
+    /// </summary>
+    public override void Initialize()
+    {
+        instance = this;
 
-		if (fsmEditor == null)
-		{
-			fsmEditor = new FsmEditor();
-		}
-		
-		fsmEditor.InitWindow(this);
-		fsmEditor.OnEnable();
-	}
-	
-	private void OnGUI()
+        if (fsmEditor == null)
+        {
+            fsmEditor = new FsmEditor();
+        }
+
+        fsmEditor.InitWindow(this);
+        fsmEditor.OnEnable();
+    }
+
+    public override void DoGUI()
 	{
 		fsmEditor.OnGUI();
 
@@ -308,27 +309,42 @@ class FsmEditorWindow : EditorWindow
 
     private void Update()
 	{
-		fsmEditor.Update();
+        if (fsmEditor != null)
+        {
+            fsmEditor.Update();
+        }
 	}
 
     private void OnInspectorUpdate()
 	{
-		fsmEditor.OnInspectorUpdate();
+        if (fsmEditor != null)
+        {
+            fsmEditor.OnInspectorUpdate();
+        }
 	}
 
     private void OnFocus()
 	{
-		fsmEditor.OnFocus();
+        if (fsmEditor != null)
+        {
+            fsmEditor.OnFocus();
+        }
 	}
 
     private void OnSelectionChange()
 	{
-		fsmEditor.OnSelectionChange();
+        if (fsmEditor != null)
+        {
+            fsmEditor.OnSelectionChange();
+        }
 	}
 
     private void OnHierarchyChange()
 	{
-		fsmEditor.OnHierarchyChange();
+        if (fsmEditor != null)
+        {
+            fsmEditor.OnHierarchyChange();
+        }
 	}
 
     private void OnProjectChange()
@@ -406,7 +422,10 @@ class FsmEditorWindow : EditorWindow
 			aboutWindow.SafeClose();
 		}
 
-        fsmEditor.OnDestroy();
+	    if (fsmEditor != null)
+	    {
+	        fsmEditor.OnDestroy();
+	    }
 	}
 
 	// ReSharper restore UnusedMember.Local

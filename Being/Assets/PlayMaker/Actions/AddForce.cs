@@ -101,16 +101,16 @@ namespace HutongGames.PlayMaker.Actions
 			{
 				if (!atPosition.IsNone)
 				{
-					go.rigidbody.AddForceAtPosition(force, atPosition.Value);
+					go.rigidbody.AddForceAtPosition(force, atPosition.Value, forceMode);
 				}
 				else
 				{
-					go.rigidbody.AddForce(force);
+					go.rigidbody.AddForce(force, forceMode);
 				}
 			}
 			else
 			{
-				go.rigidbody.AddRelativeForce(force);
+				go.rigidbody.AddRelativeForce(force,forceMode);
 			}
 		}
 

@@ -13,12 +13,7 @@ namespace HutongGames.PlayMaker.Actions
 		[UIHint(UIHint.Variable)]
 		[Tooltip("True if we are in a room.")]
 		public FsmBool isInRoom;
-		
-		[Tooltip("Send this event if we are in a room.")]
-		public FsmEvent isInRoomEvent;
-		
-		[Tooltip("Send this event if we aren't in any room.")]
-		public FsmEvent isNotInRoomEvent;
+
 			
 		[ActionSection("room properties")]
 		[UIHint(UIHint.Variable)]
@@ -44,8 +39,27 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Defines if the room is listed in its lobby.")]
 		public FsmBool visible;
 		
-	
+		[Tooltip("Custom Properties you have assigned to this room.")]
+		[CompoundArray("Room Custom Properties", "property", "value")]
+		public FsmString[] customPropertyKeys;
+		[UIHint(UIHint.Variable)]
+		public FsmVar[] customPropertiesValues;
 		
+		
+		[ActionSection("Events")] 
+		
+				
+		[Tooltip("Send this event if we are in a room.")]
+		public FsmEvent isInRoomEvent;
+		
+		[Tooltip("Send this event if we aren't in any room.")]
+		public FsmEvent isNotInRoomEvent;
+		
+		[Tooltip("Send this event if the room properties were found.")]
+		public FsmEvent successEvent;
+		
+		[Tooltip("Send this event if the room properties access failed, likely because we are not in a room or because a custom property was not found")]
+		public FsmEvent failureEvent;
 		
 		public override void Reset()
 		{
@@ -60,18 +74,32 @@ namespace HutongGames.PlayMaker.Actions
 			isInRoom = null;
 			isInRoomEvent = null;
 			isNotInRoomEvent = null;
+			
+			customPropertyKeys = new FsmString[0];
+			customPropertiesValues = new FsmVar[0];
+			
+			successEvent = null;
+			failureEvent = null;
+			
 		}
-		
 		
 		public override void OnEnter()
 		{
-			getRoomProperties();
+			bool ok = getRoomProperties();
+			
+			
+			if (ok)
+			{
+				Fsm.Event(successEvent);
+			}else{
+				Fsm.Event(failureEvent);
+			}
 			
 			Finish();
 		}
 		
 		
-		void getRoomProperties()
+		bool getRoomProperties()
 		{
 			Room _room = PhotonNetwork.room;
 			bool _isInRoom = _room!=null;
@@ -90,9 +118,9 @@ namespace HutongGames.PlayMaker.Actions
 				{
 					Fsm.Event(isNotInRoomEvent);
 				}
-				return;
+				return false;
 			}
-			
+
 			// we get the room properties
 			RoomName.Value = _room.name;
 			maxPlayers.Value = _room.maxPlayers;
@@ -100,7 +128,20 @@ namespace HutongGames.PlayMaker.Actions
 			visible.Value = _room.visible;
 			playerCount.Value = _room.playerCount;
 			
+			// get the custom properties
+			int i = 0;
+			foreach(FsmString key in customPropertyKeys)
+			{
+				if (_room.customProperties.ContainsKey(key.Value))
+				{
+					PlayMakerPhotonProxy.ApplyValueToFsmVar(this.Fsm,customPropertiesValues[i],_room.customProperties[key.Value]);
+				}else{
+					return false;
+				}
+				i++;
+			}
 			
+			return true;
 		}
 
 	}

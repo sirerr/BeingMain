@@ -1,6 +1,6 @@
 // (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
-#if !UNITY_FLASH
+#if !(UNITY_FLASH || UNITY_METRO)
 
 using System;
 using UnityEngine;

@@ -40,6 +40,9 @@ public class PlayMakerPhotonGameObjectProxy : MonoBehaviour {
 	// get the Playmaker Photon proxy fsm.
 	void Awake () {
 	
+
+		Debug.Log("Player awake");
+			
 		// get the photon proxy for Photon Fsm Proxy to send event.
 		GameObject go = GameObject.Find("PlayMaker Photon Proxy");
 		
@@ -82,11 +85,13 @@ public class PlayMakerPhotonGameObjectProxy : MonoBehaviour {
 	
 		if (fsmProxy==null)
 		{
+			Debug.LogWarning("FsmProxy is null");
 			return;
 		}
 	
 		// TOFIX: if we found a better solution, I am all up for it... How stable this can be if framerate is low for example?
 		Invoke("sendPhotonInstantiationFsmEvent",0.1f);
+
 		
 	}// OnPhotonInstantiate
 	

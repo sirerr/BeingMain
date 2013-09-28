@@ -39,8 +39,8 @@ namespace HutongGames.PlayMaker.Actions
 		}
 
 		void DoRebuildTextures()
-		{
-#if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_NACL || UNITY_FLASH || UNITY_PS3)
+        {
+#if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_NACL || UNITY_FLASH || UNITY_PS3 || UNITY_BLACKBERRY || UNITY_METRO || UNITY_WP8)
 	
 			var substance = substanceMaterial.Value as ProceduralMaterial;
 
@@ -60,6 +60,6 @@ namespace HutongGames.PlayMaker.Actions
 			}
 
 #endif
-		}
+        }
 	}
 }

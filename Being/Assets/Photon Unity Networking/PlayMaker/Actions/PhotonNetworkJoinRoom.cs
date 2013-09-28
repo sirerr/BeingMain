@@ -5,7 +5,7 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Photon")]
-	[Tooltip("Join room with given title. If no such room exists, it will be created")]
+	[Tooltip("Join room with given title. If no such room exists, An Photon Error Event will occur (FAILED TO JOIN ROOM")]
 	[HelpUrl("https://hutonggames.fogbugz.com/default.asp?W914")]
 	public class PhotonNetworkJoinRoom : FsmStateAction
 	{

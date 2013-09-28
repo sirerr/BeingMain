@@ -1,6 +1,6 @@
 ﻿// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
-#if !(UNITY_FLASH || UNITY_NACL)
+#if !(UNITY_FLASH || UNITY_NACL || UNITY_METRO || UNITY_WP8)
 
 using UnityEngine;
 

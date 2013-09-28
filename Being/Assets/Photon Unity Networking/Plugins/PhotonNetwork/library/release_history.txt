@@ -1,18 +1,29 @@
 * release_history.txt
-* Release history for the DotNet Photon and Neutron Client Libraries (DotNet / Unity3D / Windows Phone 7.5 / Windows 8 RT / Windows Phone 8 / PlayStation Mobile)
-(C) 2012 Exit Games GmbH, http://www.exitgames.com
+* Release history for the DotNet Photon Client Library (DotNet / Unity3D / Windows 8 RT / Windows Phone 8 / Windows Phone 7.5 / PlayStation Mobile)
+(C) 2013 Exit Games GmbH, http://www.exitgames.com
 
 Questions? Visit:
-    http://forum.exitgames.com
-    http://doc.exitgames.com
     http://www.exitgamescloud.com
+    http://doc.exitgames.com/photon-cloud
+    http://forum.exitgames.com
 
 
-*** Version 3.0.1.18 (31.1.2013 - rev1967)
+*** Version 3.2.0.1 (15.02.2013 - rev2060)
+    Fixed: Issue with delayed sending of operations in udp. The data could become overwritten before being sent. The bug was leading to high disconnect rates for clients using Windows Phone 7 and 8 and Silverlight or any client that used Network Simulation.
+
+
+*** Version 3.2.0.0 (13.02.2013 - rev2053)
+    Note: This release only changed the version, matching the new Server SDK v3.2.0.0
+    Updated: readme.txt
+    Fixed: Reference for Windows 8 RT and Windows Phone 8 SDKs.
+    Added: Particle Demo to Unity Client SDK.
+
+*** Version 3.0.1.18 (11.02.2013 - rev1998)
     Added: Optional per package CRC checksums to filter out compromised packages (avoiding more issues, compared to reading bad values).
     Added: PhotonPeer .CrcEnabled and .PacketLossByCrc to handle CRC and get the count of affected (incoming) packages.
     Note: Checking packages with CRC will take some computation time. Consider this an option to detect if/why someone's connection is bad. It's likely not good to be enabled by default.
-
+Windows 8 RT & Windows 8 Phone:
+    Fixed: Serialization of foat and double values. These caused exceptions when used in object-arrays.
 
 *** Version 3.0.1.17 (19.12.2012 - rev1946)
     Added: New Platform: Mono 4 Android. Please check the Readme.txt for hints how to build the demo in Mono 4 Android.
@@ -23,10 +34,14 @@ Questions? Visit:
     Renamed: GetLocalMsTimestampDelegate is now: SupportClass.IntegerMillisecondsDelegate (rarely used if at all).
 
 *** Version 3.0.1.16 (29.11.2012 - rev1923)
-    Internal: A client timeout now internally sets connectionState to Zombie and then calls Disconnect() instead of stopping the connection right away.
-    Changed: Disconnect() sends a disconnect-command in any case (except not connected or disconnecting). If the connection is not in state connected anymore, said command is unsequenced (unreliable) and the disconnect is locally executed immediately as call to StopThread(). As before, disconnecting and disconnected clients won't send this.
-    Changed: Ping creation is now more strict and checks also if any reliable commands are outgoing AreReliableCommandsInTransit(). this avoids a few pings.
-    Fixed: NullReference exception in StopConnection() if it's called before being connected for the first time (late object creation made this fail).
+	Internal: A client timeout now internally sets connectionState to Zombie and then calls Disconnect() instead of stopping the connection right away.
+	Changed: Disconnect() sends a disconnect-command in any case (except not connected or disconnecting). If the connection is not in state connected anymore, said command is unsequenced (unreliable) and the disconnect is locally executed immediately as call to StopThread(). As before, disconnecting and disconnected clients won't send this.
+	Changed: Ping creation is now more strict and checks also if any reliable commands are outgoing AreReliableCommandsInTransit(). this avoids a few pings.
+	Fixed: NullReference exception in StopConnection() if it's called before being connected for the first time (late object creation made this fail).
+	Changed: PhotonPeer.LocalTimeInMilliSeconds property now uses SupportClass.GetTickCount(). That method is using Environment.TickCount (which can be replaced if needed).
+	Changed: Any place that directly used Environment.TickCount (as the way SupportClass.GetTickCount() gets the value can be replaced).
+	Renamed: GetLocalMsTimestampDelegate is now: SupportClass.IntegerMillisecondsDelegate (rarely used if at all).
+
 
 *** Version 3.0.1.15 (27.11.2012 - rev1917)
     Note: Silverlight SDK release only!
@@ -63,7 +78,7 @@ Windows Phone 8:
 Windows 8 RT:
     Added: Demo "Phong", which is a simplified, basic multiplayer game. It's focus is to show how to sync data, not to make it super smooth and error free. Let us know any issues but bear with us as it isn't fully featured.
 
-*** Version 3.0.1.13 (26.9.2012 - rev1731)
+*** Version 3.0.1.13 (26.09.2012 - rev1731)
     Fixed: Internals of method DispatchIncomingCommands() for UDP. In some cases this removed commands from a dictionary inside a foreach loop (which causes an Exception due to changing the dictionary)
     Added: Support for Dictionary<,>[]. This is not a very lean way to send data (especially when using <object,object>) but if needed, it now works
     Changed: Replaced several foreach loops with for loops (it doesn't change usage but in Unity exports to iOS, foreach uses more memory than for)
@@ -177,7 +192,6 @@ Internal:
     Internal: socket to non-blocking (maybe not possible on all devices)
     Removed: initial-HTTP-protocol support (HTTP support not public yet)
     Added: support for encryption with HTTP protocol
-
 
 *** Version 3.0.1.2
 - Added: Rooms now have a "well known" property to list the custom properties that should be available in the lobby. This can be set per room (but most likely makes sense per title/application).

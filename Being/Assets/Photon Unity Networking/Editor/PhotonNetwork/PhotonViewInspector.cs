@@ -15,17 +15,6 @@ using UnityEngine;
 [CustomEditor(typeof(PhotonView))]
 public class PhotonViewInspector : Editor
 {
-    private static GameObject GetPrefabParent(GameObject mp)
-    {
-        #if UNITY_2_6_1 || UNITY_2_6 || UNITY_3_0 || UNITY_3_0_0 || UNITY_3_1 || UNITY_3_2 || UNITY_3_3 || UNITY_3_4
-        // Unity 3.4 and older use EditorUtility
-        return (EditorUtility.GetPrefabParent(mp) as GameObject);
-        #else
-        // Unity 3.5 uses PrefabUtility
-        return PrefabUtility.GetPrefabParent(mp) as GameObject;
-        #endif
-    }
-
     public override void OnInspectorGUI()
     {
         EditorGUIUtility.LookLikeInspector();
@@ -35,7 +24,8 @@ public class PhotonViewInspector : Editor
         bool isProjectPrefab = EditorUtility.IsPersistent(mp.gameObject);
 
 
-        // OWNER
+
+        // Owner
         if (isProjectPrefab)
         {
             EditorGUILayout.LabelField("Owner:", "Set at runtime");
@@ -44,14 +34,19 @@ public class PhotonViewInspector : Editor
         {
             EditorGUILayout.LabelField("Owner:", "Scene");
         }
-        else if (mp.owner == null)
-        {
-            EditorGUILayout.LabelField("Owner:", "null, disconnected?");
-        }
         else
         {
-            EditorGUILayout.LabelField("Owner:", "[" + mp.ownerId + "] " + mp.owner);
+            PhotonPlayer owner = mp.owner;
+            string ownerInfo = (owner != null) ? owner.name : "<no PhotonPlayer found>";
+
+            if (string.IsNullOrEmpty(ownerInfo))
+            {
+                ownerInfo = "<no playername set>";
+            }
+
+            EditorGUILayout.LabelField("Owner:", "[" + mp.ownerId + "] " + ownerInfo);
         }
+
 
 
         // View ID
@@ -61,88 +56,115 @@ public class PhotonViewInspector : Editor
         }
         else if (EditorApplication.isPlaying)
         {
-            if (mp.ownerId != 0 && mp.owner != null)
-            {
-                EditorGUILayout.LabelField("View ID", "[" + mp.ownerId + "] " + mp.viewID);
-            }
-            else
-            {
-                EditorGUILayout.LabelField("View ID", mp.viewID + string.Empty);
-            }
+            EditorGUILayout.LabelField("View ID", mp.viewID.ToString());
         }
         else
         {
-            int newId = EditorGUILayout.IntField("View ID [0.."+(PhotonNetwork.MAX_VIEW_IDS-1)+"]", mp.viewID);
-            if (newId != mp.viewID)
-            {
-                mp.viewID = newId;
-                EditorUtility.SetDirty(mp);
-                PhotonViewHandler.HierarchyChange();
-            }
+            int idValue = EditorGUILayout.IntField("View ID [0.."+(PhotonNetwork.MAX_VIEW_IDS-1)+"]", mp.viewID);
+            mp.viewID = idValue;
         }
 
 
-        // OBSERVING    
+
+        // Locally Controlled
+        if (EditorApplication.isPlaying)
+        {
+            string masterClientHint = PhotonNetwork.isMasterClient ? "(master)" : "";
+            EditorGUILayout.Toggle("Controlled locally: " + masterClientHint, mp.isMine);
+        }
+
+
+
+        // Observed Item    
         EditorGUILayout.BeginHorizontal();
 
         // Using a lower version then 3.4? Remove the TRUE in the next line to fix an compile error
-        string title = string.Empty;
-        int firstOpen = 0;
+        string typeOfObserved = string.Empty;
         if (mp.observed != null)
         {
-            firstOpen = mp.observed.ToString().IndexOf('(');
-        }
-
-        if (firstOpen > 0)
-        {
-            title = mp.observed.ToString().Substring(firstOpen - 1);
-        }
-
-        mp.observed = (Component)EditorGUILayout.ObjectField("Observe: " + title, mp.observed, typeof(Component), true);
-        if (GUI.changed)
-        {
-            PhotonViewHandler.HierarchyChange();  // TODO: check if needed
-            if (mp.observed != null)
+            int firstBracketPos = mp.observed.ToString().LastIndexOf('(');
+            if (firstBracketPos > 0)
             {
-                mp.synchronization = ViewSynchronization.ReliableDeltaCompressed;
+                typeOfObserved = mp.observed.ToString().Substring(firstBracketPos);
             }
-            else
+        }
+
+
+        Component componenValue = (Component)EditorGUILayout.ObjectField("Observe: " + typeOfObserved, mp.observed, typeof(Component), true);
+        if (mp.observed != componenValue)
+        {
+            if (mp.observed == null)
+            {
+                mp.synchronization = ViewSynchronization.Unreliable;    // if we didn't observe anything before, we could observe unreliably now
+            }
+            if (componenValue == null)
             {
                 mp.synchronization = ViewSynchronization.Off;
             }
+
+            mp.observed = componenValue;
         }
 
         EditorGUILayout.EndHorizontal();
 
+
+        
+        // ViewSynchronization (reliability)
         if (mp.synchronization == ViewSynchronization.Off)
         {
             GUI.color = Color.grey;
         }
 
-        mp.synchronization = (ViewSynchronization)EditorGUILayout.EnumPopup("Observe option:", mp.synchronization);
-        if (GUI.changed)
+        ViewSynchronization vsValue = (ViewSynchronization)EditorGUILayout.EnumPopup("Observe option:", mp.synchronization);
+        if (vsValue != mp.synchronization)
         {
-            PhotonViewHandler.HierarchyChange();  // TODO: check if needed
+            mp.synchronization = vsValue;
             if (mp.synchronization != ViewSynchronization.Off && mp.observed == null)
             {
                 EditorUtility.DisplayDialog("Warning", "Setting the synchronization option only makes sense if you observe something.", "OK, I will fix it.");
             }
         }
 
+
+
+        // Serialization
+        // show serialization options only if something is observed
         if (mp.observed != null)
         {
             Type type = mp.observed.GetType();
             if (type == typeof(Transform))
             {
                 mp.onSerializeTransformOption = (OnSerializeTransform)EditorGUILayout.EnumPopup("Serialization:", mp.onSerializeTransformOption);
+
             }
             else if (type == typeof(Rigidbody))
             {
                 mp.onSerializeRigidBodyOption = (OnSerializeRigidBody)EditorGUILayout.EnumPopup("Serialization:", mp.onSerializeRigidBodyOption);
+
             }
+        }
+
+
+
+        // Cleanup: save and fix look
+        if (GUI.changed)
+        {
+            EditorUtility.SetDirty(mp);
+            PhotonViewHandler.HierarchyChange();  // TODO: check if needed
         }
 
         GUI.color = Color.white;
         EditorGUIUtility.LookLikeControls();
+    }
+
+    private static GameObject GetPrefabParent(GameObject mp)
+    {
+        #if UNITY_2_6_1 || UNITY_2_6 || UNITY_3_0 || UNITY_3_0_0 || UNITY_3_1 || UNITY_3_2 || UNITY_3_3 || UNITY_3_4
+        // Unity 3.4 and older use EditorUtility
+        return (EditorUtility.GetPrefabParent(mp) as GameObject);
+        #else
+        // Unity 3.5 uses PrefabUtility
+        return PrefabUtility.GetPrefabParent(mp) as GameObject;
+        #endif
     }
 }

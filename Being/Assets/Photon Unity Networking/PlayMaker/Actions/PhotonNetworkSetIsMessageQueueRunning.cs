@@ -19,6 +19,7 @@ namespace HutongGames.PlayMaker.Actions
 
 		public override void OnEnter()
 		{
+			UnityEngine.Debug.Log("set isMessageQueueRunning to "+isMessageQueueRunning.Value);
 			PhotonNetwork.isMessageQueueRunning = isMessageQueueRunning.Value;
 			
 			Finish();

@@ -194,7 +194,7 @@ namespace HutongGames.PlayMaker.Actions
 					}
 				}
 				
-				if(isRunning) {
+				if(isRunning && !looping) {
 					finishAction = true;
 					for(int i = 0; i<endTimes.Length;i++){
 						//Debug.Log(i.ToString() + "| " +endTimes[i].ToString() + " " + currentTime.ToString());
